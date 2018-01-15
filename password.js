@@ -28,7 +28,8 @@ const rl = readline.createInterface({
 
 rl.question('Password: ', password => {
     let passwordHash = sha512.hmac(password);
-    config.set('Configuration.Password', passwordHash);
+    let actualHash = passwordHash.finalize('pancakedb');
+    config.set('Configuration.Password', actualHash.ToString('hex'));
     rl.close();
 });
 
