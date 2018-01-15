@@ -1,0 +1,21 @@
+{
+  "name": "pancakedb",
+  "version": "0.0.1",
+  "description": "PancakeDB - a database written in node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo bugger off"
+  },
+  "keywords": [
+    "database"
+  ],
+  "author": "LewisTehMinerz",
+  "license": "GPL-3.0",
+  "devDependencies": {},
+  "dependencies": {
+    "chalk": "^2.3.0",
+    "js-sha512": "^0.7.1",
+    "properties-reader": "0.0.16",
+    "ws": "^4.0.0"
+  }
+}
