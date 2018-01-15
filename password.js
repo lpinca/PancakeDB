@@ -26,7 +26,8 @@ const rl = readline.createInterface({
 });
 
 rl.question('Password: ', password => {
-    let passwordHash;
+    let passwordHash = sha512.hmac(password);
+    config.set('Configuration.Password', passwordHash);
     rl.close();
 });
 
