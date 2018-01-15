@@ -16,6 +16,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+const PropertiesReader = require('properties-reader');
 const config = PropertiesReader('PancakeDB.ini');
 const readline = require('readline');
 const sha512 = require('js-sha512');
