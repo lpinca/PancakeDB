@@ -17,7 +17,7 @@ The following document is a set of guidelines for contributing to PancakeDB and 
         * [Pull Requests](#pull-requests)
 
 # Code of Conduct
-The Code of Conduct can be found [here](https://github.com/LewisTehMinerz/PancakeDB/blob/master/CODE_OF_CONDUCT.md). Please follow it, we don't want anyone getting hurt!
+The Code of Conduct can be found [here](https://github.com/PancakeDB/PancakeDB/blob/master/CODE_OF_CONDUCT.md). Please follow it, we don't want anyone getting hurt!
 
 # Before Contributing...
 ### This is an open source project.
@@ -45,7 +45,7 @@ Explain the problem and include additional details to help maintainers reproduce
 
 Provide more context by answering these questions:
 * Did the problem start happening recently (e.g. after you updated PancakeDB) or was this always a problem?
-* If the problem started happening recently, can you reproduce the problem in an older version of PancakeDB? What's the most recent version in which the problem doesn't happen?
+* If the problem started happening recently, can you reproduce the problem in an older version of PancakeDB? What's the most recent version in which the problem doesn't happen? You can download older versions of PancakeDB from the [releases page](https://github.com/PancakeDB/PancakeDB/releases).
 * Can you reliably reproduce the issue? If not, provide details about how often the problem happens and under which conditions it normally happens.
 
 Include details about your configuration and environment:
