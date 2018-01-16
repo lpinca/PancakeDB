@@ -1,6 +1,6 @@
 {
   "name": "pancakedb",
-  "version": "0.0.1",
+  "version": "0.0.1-dev",
   "description": "PancakeDB - a database written in node.js",
   "main": "index.js",
   "scripts": {
