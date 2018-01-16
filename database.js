@@ -18,20 +18,17 @@
 
 const log = require('./log');
 const chalk = require('chalk');
-const PropertiesReader = require('properties-reader');
-const config = PropertiesReader('PancakeDB.ini');
-const password = config.get('Configuration.Password');
+const ini = require('ini');
+const config = ini.parse(fs.readFileSync('./PancakeDB.ini', 'utf-8'));
+const password = config.Configuration.Password;
 const sha512 = require('js-sha512');
 
 
 var checkAuthenticator = function(passwordToCheck){
-    let hasher = sha512.hmac(passwordToCheck);
-    let actualHash = passwordHash.finalize('pancakedb');
-    if actualHash.ToString('hex') === password {
-        return true
-    } else {
-        return false
-    }
+    let hasher = sha512.hmac.create('pancakedb');
+    hasher.update(passwordToCheck);
+    let actualHash = hasher.hex();
+    return actualHash == password;
 };
 
 var databaseManager = {

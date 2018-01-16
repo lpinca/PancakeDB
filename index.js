@@ -19,12 +19,12 @@
 const chalk = require('chalk');
 const log = require('./log');
 const WebSocket = require('ws');
-const PropertiesReader = require('properties-reader');
+const ini = require('ini');
 
 const messageHandler = require('./database');
 
-const config = PropertiesReader('PancakeDB.ini');
-const port = config.get('Configuration.Port');
+const config = ini.parse(fs.readFileSync('./PancakeDB.ini', 'utf-8'));
+const port = config.Configuration.Port;
 
 const asciiArt = chalk.yellow(`
    ___              ___      _           ___  ___ 

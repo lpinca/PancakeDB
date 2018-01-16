@@ -16,8 +16,9 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-const PropertiesReader = require('properties-reader');
-const config = PropertiesReader('PancakeDB.ini');
+const ini = require('ini');
+const fs = require('fs');
+const config = ini.parse(fs.readFileSync('./PancakeDB.ini', 'utf-8'));
 const readline = require('readline');
 const sha512 = require('js-sha512');
 
@@ -27,9 +28,11 @@ const rl = readline.createInterface({
 });
 
 rl.question('Password: ', password => {
-    let passwordHash = sha512.hmac(password);
-    let actualHash = passwordHash.finalize('pancakedb');
-    config.set('Configuration.Password', actualHash.ToString('hex'));
+    let passwordHash = sha512.hmac.create('pancakedb');
+    passwordHash.update(password);
+    config.Configuration.Password = passwordHash.hex();
+    fs.writeFileSync('./PancakeDB.ini', ini.stringify(config));
+    console.log('Password updated.');
     rl.close();
 });
 
