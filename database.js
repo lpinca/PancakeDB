@@ -21,6 +21,18 @@ const chalk = require('chalk');
 const PropertiesReader = require('properties-reader');
 const config = PropertiesReader('PancakeDB.ini');
 const password = config.get('Configuration.Password');
+const sha512 = require('js-sha512');
+
+
+var checkAuthenticator = function(passwordToCheck){
+    let hasher = sha512.hmac(passwordToCheck);
+    let actualHash = passwordHash.finalize('pancakedb');
+    if actualHash.ToString('hex') === password {
+        return true
+    } else {
+        return false
+    }
+};
 
 var databaseManager = {
     databaseExists: (db) => {
@@ -51,7 +63,7 @@ module.exports = function messageHandler(ws, msg) {
     args.shift();
     if (cmd == 'AUTH') {
         if (!ws.isAuthenticated) {
-            if (args[0] == password) {
+            if (checkAuthenticator(cmd)) {
                 ws.isAuthenticated = true;
                 ws.send('OK');
             } else {
