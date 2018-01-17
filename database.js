@@ -37,7 +37,13 @@ var databaseManager = {
         return fs.existsSync(`./databases/${db}.json`);
     },
     tableExists: (db, table) => {
-
+        if (databaseManager.databaseExists(db)) {
+            let raw = fs.readFileSync(`./databases/${db}.json`, 'utf-8');
+            let database = JSON.parse(raw);
+            return database[table] != undefined;
+        } else {
+            return false;
+        }
     },
     selectDatabase: (ws, db) => {
         if (ws.isAuthenticated) {
@@ -74,7 +80,15 @@ var databaseManager = {
         }
     },
     createTable: (db, table) => {
-        
+        if (!databaseManager.tableExists(db, table)) {
+            let raw = fs.readFileSync(`./databases/${db}.json`, 'utf-8');
+            let database = JSON.parse(raw);
+            database[table] = {};
+            fs.writeFileSync(`./databases/${db}.json`, JSON.stringify(database));
+            return true;
+        } else {
+            return false;
+        }
     }
 };
 
