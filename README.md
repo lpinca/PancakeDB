@@ -1,4 +1,4 @@
-<img align="right" src="https://raw.githubusercontent.com/LewisTehMinerz/PancakeDB/master/PancakeDB.png" width="300" height="300">
+<img align="right" src="https://raw.githubusercontent.com/PancakeDB/PancakeDB/master/PancakeDB.png" width="300" height="300">
 
 # PancakeDB
 PancakeDB (sometimes called Pancake) is a database system written in Node.js, and uses websockets for communicating with a client.
