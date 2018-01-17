@@ -21,10 +21,6 @@ const log = require('./log');
 const WebSocket = require('ws');
 const ini = require('ini');
 const fs = require('fs');
-const messageHandler = require('./database');
-
-const config = ini.parse(fs.readFileSync('./PancakeDB.ini', 'utf-8'));
-const port = config.Configuration.Port;
 
 const asciiArt = chalk.yellow(`
    ___              ___      _           ___  ___ 
@@ -38,7 +34,29 @@ PancakeDB - nodejs database software`);
 
 fs.mkdir('./databases', noop);
 
+var config, port;
+
+if (!fs.existsSync('./PancakeDB.ini')) {
+    let configIni = `[Configuration]
+Port=8080
+Password=`;
+    fs.writeFileSync('./PancakeDB.ini', configIni);
+    config = ini.parse(fs.readFileSync('./PancakeDB.ini', 'utf-8'));
+    port = config.Configuration.Port;
+} else {
+    config = ini.parse(fs.readFileSync('./PancakeDB.ini', 'utf-8'));
+    port = config.Configuration.Port;
+}
+
+const messageHandler = require('./database');
+
 console.log(asciiArt);
+
+if (config.Configuration.Password == '') {
+    log('Error', chalk.red, 'A password has not been set. Please run `node password` in the PancakeDB installation folder.');
+    process.exit(1);
+}
+
 log('Server', chalk.green, 'Starting PancakeDB server...');
 
 const server = new WebSocket.Server({port: port});
