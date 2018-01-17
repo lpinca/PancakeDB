@@ -20,7 +20,7 @@ const chalk = require('chalk');
 const log = require('./log');
 const WebSocket = require('ws');
 const ini = require('ini');
-
+const fs = require('fs');
 const messageHandler = require('./database');
 
 const config = ini.parse(fs.readFileSync('./PancakeDB.ini', 'utf-8'));
@@ -35,6 +35,8 @@ const asciiArt = chalk.yellow(`
                                                   
 
 PancakeDB - nodejs database software`);
+
+fs.mkdir('./databases', noop);
 
 console.log(asciiArt);
 log('Server', chalk.green, 'Starting PancakeDB server...');
