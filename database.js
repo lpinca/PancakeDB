@@ -50,7 +50,7 @@ var databaseManager = {
 };
 
 /**
- * Handles WaffleDB WebSocket messages.
+ * Handles PancakeDB WebSocket messages.
  * @param {WebsocketClient} ws The WebSocket client that sent the message.
  * @param {string} msg The message that the client sent.
  */
