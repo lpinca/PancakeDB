@@ -70,6 +70,10 @@ function heartbeat() {
 server.on('connection', (ws, req) => {
     ws.isAlive = true;
     ws.isAuthenticated = false;
+    ws.current = {
+        database: undefined,
+        table: undefined
+    };
     ws.on('pong', heartbeat);
     ws.on('error', () => log('Server', chalk.green, 'Lost connection to ' + req.connection.remoteAddress));
     log('Server', chalk.green, 'Connection established with ' + req.connection.remoteAddress);
