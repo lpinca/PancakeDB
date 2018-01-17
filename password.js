@@ -19,20 +19,20 @@
 const ini = require('ini');
 const fs = require('fs');
 const config = ini.parse(fs.readFileSync('./PancakeDB.ini', 'utf-8'));
-const readline = require('readline');
+const Prompt = require('prompt-password');
 const sha512 = require('js-sha512');
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
+const p = new Prompt({
+    type: 'password',
+    message: 'Please input your desired password.',
+    name: 'password'
 });
 
-rl.question('Password: ', password => {
+p.run().then(password => {
     let passwordHash = sha512.hmac.create('pancakedb');
     passwordHash.update(password);
     config.Configuration.Password = passwordHash.hex();
     fs.writeFileSync('./PancakeDB.ini', ini.stringify(config));
     console.log('Password updated.');
-    rl.close();
 });
 
