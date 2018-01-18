@@ -19,6 +19,7 @@
 const log = require('./log');
 const chalk = require('chalk');
 const ini = require('ini');
+const mergeJSON = require("merge-json");
 const fs = require('fs');
 const config = ini.parse(fs.readFileSync('./PancakeDB.ini', 'utf-8'));
 const password = config.Configuration.Password;
@@ -97,6 +98,17 @@ var databaseManager = {
             database[table] = [];
             fs.writeFileSync(`./databases/${db}.json`, JSON.stringify(database));
             return true;
+        } else {
+            return false;
+        }
+    },
+    mergeDatabase: (db, dbToMerge) => {
+        if (databaseManager.databaseExists(db) && databaseManager.databaseExists(dbToMerge)) {
+            let raw = fs.readFileSync(`./databases/${db}.json`);
+            let rawMerger = fs.readFileSync(`./databases/${dbToMerge}.json`);
+            let merged = mergeJSON.merge(raw, rawMerger);
+            fs.writeFileSync(`./databases/${db}.json`, JSON.stringify(merged));
+            return true
         } else {
             return false;
         }
@@ -269,6 +281,80 @@ module.exports = function messageHandler(ws, msg) {
                     }
                 } else if (args[0] == 'TABLE') {
                     if (ws.current.database != undefined) {
+                        if (ws.current.table != undefined) {
+                            if (databaseManager.deleteTable(ws.current.database, ws.current.table)) {
+                                ws.current.table = undefined;
+                                ws.send('OK');
+                            } else {
+                                ws.send('FAILURE');
+                            }
+                        } else {
+                            if (args[1] == null) {
+                                ws.send('NOT_ENOUGH_ARGUMENTS');
+                            } else {
+                                if (databaseManager.deleteTable(ws.current.database, args[1])) {
+                                    ws.current.table = undefined;
+                                    ws.send('OK');
+                                } else {
+                                    ws.send('FAILURE');
+                                }
+                            }
+                        }
+                    } else {
+                        ws.send('NO_DATABASE');
+                    }
+                } else if (args[0] == 'RECORD') {
+                    if (ws.current.database != undefined) {
+                        if (ws.current.table != undefined) {
+                            if (args.length < 1) {
+                                ws.send('NOT_ENOUGH_ARGUMENTS');
+                            } else {
+                                if (databaseManager.deleteRecord(ws.current.database, ws.current.table, args[0])) {
+                                    ws.send('OK');
+                                } else {
+                                    ws.send('FAILURE');
+                                }
+                            }
+                        } else {
+                            ws.send('NO_TABLE');
+                        }
+                    } else {
+                        ws.send('NO_DATABASE');
+                    }
+                }
+            }
+        } else {
+            ws.send('NOT_AUTHENTICATED');
+        }
+    } else if (cmd == 'MERGE WITH') { //As far as I got
+        if (ws.isAuthenticated) {
+            if (args.length < 3) {
+                ws.send('NOT_ENOUGH_ARGUMENTS');
+            } else {
+                if (args[0] == 'DATABASE') {
+                    if (ws.current.database != undefined && databaseManager.databaseExists(args[1])) {
+                        if (databaseManager.mergeDatabase(ws.current.database, args[1])) {
+                            ws.send('OK');
+                        } else {
+                            ws.send('FAILURE');
+                        }
+                    } else if (args[2] != undefined) {
+                        ws.send('TOO_MANY_ARGUMENTS');
+                    } else {
+                        if (args[1] == undefined) {
+                            ws.send('NOT_ENOUGH_ARGUMENTS');
+                        } else if (!databaseManager.databaseExists(args[1]) || ws.current.database == undefined) {
+                            ws.send('NO_DATABASE')
+                        } else {
+                            if (databaseManager.mergeDatabase(ws.current.database, args[1])) {
+                                ws.send('OK');
+                            } else {
+                                ws.send('FAILURE');
+                            }
+                        }
+                    }
+                } else if (args[0] == 'TABLE FROM DATABASE') {
+                    if (ws.current.database != undefined && databaseManager.databaseExists(args[1])) {
                         if (ws.current.table != undefined) {
                             if (databaseManager.deleteTable(ws.current.database, ws.current.table)) {
                                 ws.current.table = undefined;
