@@ -1,6 +1,6 @@
 <img align="right" src="https://raw.githubusercontent.com/PancakeDB/PancakeDB/master/PancakeDB.png" width="300" height="300">
 
-# PancakeDB
+# PancakeDB [![CircleCI](https://circleci.com/gh/PancakeDB/PancakeDB.svg?style=svg)](https://circleci.com/gh/PancakeDB/PancakeDB)
 PancakeDB (sometimes called Pancake) is a database system written in Node.js, and uses websockets for communicating with a client.
 
 # Configuration
