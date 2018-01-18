@@ -54,3 +54,7 @@ jobs:
       - run:
           name: Running Test
           command: npm run test
+    
+      - run: 
+          name: Waiting A Second
+          command: sleep 1

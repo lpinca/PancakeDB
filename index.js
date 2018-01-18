@@ -89,6 +89,7 @@ server.on('pancakedb_shutdown', () => {
         ws.send('SERVER_SHUTDOWN');
         ws.close();
     });
+    process.exit(0);
 });
 
 const interval = setInterval(() => {
