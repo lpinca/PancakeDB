@@ -50,7 +50,7 @@ jobs:
       # make a directory for junit results
       - run:
           name: Create 'junit' Directory
-          command: mkdir ~/test-results/junit
+          command: mkdir -p test-results/junit
 
       # run tests!
       - run:
