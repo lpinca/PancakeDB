@@ -34,6 +34,7 @@ describe('Client', () => {
         ws = new WebSocket('ws://localhost:8080');
         ws.on('message', () => {
             done();
+            ws.setMaxEmitters(12); // prevents node from spitting out a warning
             ws.removeAllListeners('message');
         });
     });
