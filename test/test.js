@@ -154,7 +154,7 @@ describe('Client', () => {
     });
 });
 } catch (e) {
-    if (e instanceof RangeError && (e.message.indexOf('WebSocket') > -1)) {
+    if (e.message.indexOf('Invalid WebSocket frame') > -1) {
         // nothing we can do, if we reach this point we most likely have to restart the build if the test hangs
     } else {
         throw e;

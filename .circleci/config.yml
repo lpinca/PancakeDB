@@ -60,7 +60,7 @@ jobs:
             - MOCHA_FILE: junit/test-results.xml
 
       - store_test_results:
-          path: ~/junit
+          path: junit
 
       # lets the server shut down cleanly
       - run: 
