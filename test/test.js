@@ -30,9 +30,6 @@ const dir = chaiFiles.dir;
 var ws;
 
 describe('Client', () => {
-    after(() => {
-        ws.close();
-    });
     it('should connect', done => {
         ws = new WebSocket('ws://localhost:8080');
         ws.on('message', () => {
