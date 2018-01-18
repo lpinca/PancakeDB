@@ -30,26 +30,29 @@ const dir = chaiFiles.dir;
 var ws;
 
 describe('Client', () => {
+    afterEach(() => {
+        try {
+            ws.removeAllListeners('message');
+        } catch (e) {
+            // don't care, it will only error on the last test.
+        }
+    })
     it('should connect', done => {
         ws = new WebSocket('ws://localhost:8080');
         ws.on('message', () => {
             done();
-            ws.setMaxEmitters(12); // prevents node from spitting out a warning
-            ws.removeAllListeners('message');
         });
     });
     describe('AUTH', () => {
         it('should deny access when using an incorrect password', () => {
             ws.on('message', m => {
                 expect(m).to.equal('AUTH_FAIL');
-                ws.removeAllListeners('message');
             });
             ws.send('AUTH this_is_not_the_password');
         });
         it('should grant access when using a correct password', () => {
             ws.on('message', m => {
                 expect(m).to.equal('OK');
-                ws.removeAllListeners('message');
             });
             ws.send('AUTH pancake');
         });
@@ -60,7 +63,6 @@ describe('Client', () => {
                 ws.on('message', m => {
                     expect(m).to.equal('OK');
                     expect(file('./databases/test_database.json')).to.exist();
-                    ws.removeAllListeners('message');
                 });
                 ws.send('CREATE DATABASE test_database');
             });
@@ -69,7 +71,6 @@ describe('Client', () => {
             before(() => {
                 ws.on('message', m => {
                     expect(m).to.equal('OK');
-                    ws.removeAllListeners('message');
                 });
                 ws.send('SELECT DATABASE test_database');
             });
@@ -77,7 +78,6 @@ describe('Client', () => {
                 ws.on('message', m => {
                     expect(m).to.equal('OK');
                     expect(file('./databases/test_database.json')).to.equal('{"test_table":[]}');
-                    ws.removeAllListeners('message');
                 });
                 ws.send('CREATE TABLE test_table');
             });
@@ -87,14 +87,12 @@ describe('Client', () => {
         before(() => {
             ws.on('message', m => {
                 expect(m).to.equal('OK');
-                ws.removeAllListeners('message');
             });
             ws.send('SELECT TABLE test_table');
         });
         it('should insert a record into the table test_table in the database test_database', () => {
             ws.on('message', m => {
                 expect(m).to.equal('OK');
-                ws.removeAllListeners('message');
             });
             ws.send('INSERT {"test_record":true}');
         });
@@ -104,7 +102,6 @@ describe('Client', () => {
             it('should send an array of all the databases and the array should contain test_database', () => {
                 ws.on('message', m => {
                     expect(m).to.equal('["test_database"]');
-                    ws.removeAllListeners('message');
                 });
                 ws.send('LIST DATABASES');
             });
@@ -113,7 +110,6 @@ describe('Client', () => {
             it('should send an array of all the tables in the database test_database and the array should contain test_table', () => {
                 ws.on('message', m => {
                     expect(m).to.equal('["test_table"]');
-                    ws.removeAllListeners('message');
                 });
                 ws.send('LIST TABLES');
             });
@@ -122,7 +118,6 @@ describe('Client', () => {
             it('should send an array of all the records in the table test_table in the database test_database and the array should contain test_record', () => {
                 ws.on('message', m => {
                     expect(m).to.contain('test_record');
-                    ws.removeAllListeners('message');
                 });
                 ws.send('LIST RECORDS');
             });
@@ -134,7 +129,6 @@ describe('Client', () => {
                 ws.on('message', m => {
                     expect(m).to.equal('OK');
                     expect(file('./databases/test_database.json')).to.equal('{}');
-                    ws.removeAllListeners('message');
                 });
                 ws.send('DELETE TABLE test_table');
             });
@@ -144,7 +138,6 @@ describe('Client', () => {
                 ws.on('message', m => {
                     expect(m).to.equal('OK');
                     expect(file('./databases/test_database.json')).to.not.exist();
-                    ws.removeAllListeners('message');
                 });
                 ws.send('DELETE DATABASE test_database');
             });
