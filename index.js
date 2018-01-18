@@ -80,7 +80,15 @@ server.on('connection', (ws, req) => {
     ws.send('CONNECTION_SUCCESS');
     ws.send('PancakeDB ' + require('./package.json').version);
 
-    ws.on('message', msg => messageHandler(ws, msg));
+    ws.on('message', msg => messageHandler(ws, msg, server));
+});
+
+server.on('pancakedb_shutdown', () => {
+    log('Server', chalk.green, 'Shutdown request received.');
+    server.clients.forEach(ws => {
+        ws.send('SERVER_SHUTDOWN');
+        ws.close();
+    });
 });
 
 const interval = setInterval(() => {

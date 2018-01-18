@@ -120,7 +120,7 @@ var databaseManager = {
  * @param {WebsocketClient} ws The WebSocket client that sent the message.
  * @param {string} msg The message that the client sent.
  */
-module.exports = function messageHandler(ws, msg) {
+module.exports = function messageHandler(ws, msg, server) {
     let args = msg.split(' ');
     let cmd = args[0];
     args.shift();
@@ -326,9 +326,9 @@ module.exports = function messageHandler(ws, msg) {
         } else {
             ws.send('NOT_AUTHENTICATED');
         }
-    } else if (cmd == 'MERGE WITH') { //As far as I got
+    } else if (cmd == 'MERGE') { //As far as I got
         if (ws.isAuthenticated) {
-            if (args.length < 3) {
+            if (args.length < 2) {
                 ws.send('NOT_ENOUGH_ARGUMENTS');
             } else {
                 if (args[0] == 'DATABASE') {
@@ -338,8 +338,6 @@ module.exports = function messageHandler(ws, msg) {
                         } else {
                             ws.send('FAILURE');
                         }
-                    } else if (args[2] != undefined) {
-                        ws.send('TOO_MANY_ARGUMENTS');
                     } else {
                         if (args[1] == undefined) {
                             ws.send('NOT_ENOUGH_ARGUMENTS');
@@ -353,52 +351,12 @@ module.exports = function messageHandler(ws, msg) {
                             }
                         }
                     }
-                } else if (args[0] == 'TABLE FROM DATABASE') {
-                    if (ws.current.database != undefined && databaseManager.databaseExists(args[1])) {
-                        if (ws.current.table != undefined) {
-                            if (databaseManager.deleteTable(ws.current.database, ws.current.table)) {
-                                ws.current.table = undefined;
-                                ws.send('OK');
-                            } else {
-                                ws.send('FAILURE');
-                            }
-                        } else {
-                            if (args[1] == null) {
-                                ws.send('NOT_ENOUGH_ARGUMENTS');
-                            } else {
-                                if (databaseManager.deleteTable(ws.current.database, args[1])) {
-                                    ws.current.table = undefined;
-                                    ws.send('OK');
-                                } else {
-                                    ws.send('FAILURE');
-                                }
-                            }
-                        }
-                    } else {
-                        ws.send('NO_DATABASE');
-                    }
-                } else if (args[0] == 'RECORD') {
-                    if (ws.current.database != undefined) {
-                        if (ws.current.table != undefined) {
-                            if (args.length < 1) {
-                                ws.send('NOT_ENOUGH_ARGUMENTS');
-                            } else {
-                                if (databaseManager.deleteRecord(ws.current.database, ws.current.table, args[0])) {
-                                    ws.send('OK');
-                                } else {
-                                    ws.send('FAILURE');
-                                }
-                            }
-                        } else {
-                            ws.send('NO_TABLE');
-                        }
-                    } else {
-                        ws.send('NO_DATABASE');
-                    }
                 }
             }
         } else {
             ws.send('NOT_AUTHENTICATED');
         }
+    } else if (cmd == 'SHUTDOWN') {
+        server.emit('pancakedb_shutdown');
     }
 }

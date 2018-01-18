@@ -1,0 +1,56 @@
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:7.10.0
+    environment:
+      # add path to store test results
+      - MOCHA_FILE: "$CIRCLE_TEST_REPORTS/test-results.xml"
+
+    working_directory: ~/repo
+
+    steps:
+      # get code
+      - checkout
+
+      # download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+
+      # install deps
+      - run: 
+          name: Installing Dependencies
+          command: npm install
+
+
+      # save dependencies to cache
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      
+      # save config using echo because there is no config on github
+      - run:
+          name: Creating Configuration
+          command: echo -e "[Configuration]\nPort=8080\nPassword=545a0cc09b8423677f52d3da82f7df7316ad6c201d6cccbfc58a0ea23aade6b781e3ffdd19ca984ab18f83fbf7ef8c88703b7768830e1bc27897ebb7c5a0e258" > PancakeDB.ini
+
+      # start pancakedb server
+      - run:
+          name: Running PancakeDB Server
+          command: npm run start
+          background: true
+
+      # wait a second just to make sure that the server starts successfully.
+      - run: 
+          name: Waiting A Second
+          command: sleep 1
+
+      # run tests!
+      - run:
+          name: Running Test
+          command: npm run test
