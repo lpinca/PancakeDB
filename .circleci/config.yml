@@ -4,9 +4,6 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/node:7.10.0
-    environment:
-      # add path to store test results
-      - MOCHA_FILE: "$CIRCLE_TEST_REPORTS/test-results.xml"
 
     working_directory: ~/repo
 
@@ -50,11 +47,22 @@ jobs:
           name: Waiting A Second
           command: sleep 1
 
+      # make a directory for junit results
+      - run:
+          name: Create 'junit' Directory
+          command: mkdir ~/junit
+
       # run tests!
       - run:
           name: Running Test
           command: npm run test
-    
+          environment:
+            MOCHA_FILE: junit/test-results.xml
+
+       - store_test_results:
+           path: ~/junit
+
+      # lets the server shut down cleanly
       - run: 
           name: Waiting A Second
           command: sleep 1
