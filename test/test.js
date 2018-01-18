@@ -145,7 +145,9 @@ describe('Client', () => {
     });
     describe('SHUTDOWN', () => {
         it('should shut down the PancakeDB server', done => {
-            ws.on('disconnect', () => done());
+            ws.on('message', m => {
+                expect(m).to.equal('SERVER_SHUTDOWN');
+            });
             ws.send('SHUTDOWN');
         });
     })
