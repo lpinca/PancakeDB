@@ -50,17 +50,18 @@ jobs:
       # make a directory for junit results
       - run:
           name: Create 'junit' Directory
-          command: mkdir ~/junit
+          command: mkdir ~/test-results/junit
 
       # run tests!
       - run:
           name: Running Test
           command: npm run test
           environment:
-            - MOCHA_FILE: junit/test-results.xml
-
+            - MOCHA_FILE: test-results/junit/test-results.xml
+      
+      # tell circleci where our test results are
       - store_test_results:
-          path: junit
+          path: test-results
 
       # lets the server shut down cleanly
       - run: 
