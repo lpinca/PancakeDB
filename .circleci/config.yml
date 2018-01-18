@@ -17,20 +17,30 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: npm install
+      - run: 
+          name: Installing Dependencies
+          command: npm install
 
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       
+      - run:
+          name: Creating Configuration
+          command: echo -e "[Configuration]\nPort=8080\nPassword=545a0cc09b8423677f52d3da82f7df7316ad6c201d6cccbfc58a0ea23aade6b781e3ffdd19ca984ab18f83fbf7ef8c88703b7768830e1bc27897ebb7c5a0e258" > PancakeDB.ini
+
       # start pancakedb server
       - run:
-          name: Running PancakeDB server
+          name: Running PancakeDB Server
           command: npm run start
           background: true
 
-      - run: sleep 1
+      - run: 
+          name: Waiting A Second
+          command: sleep 1
 
       # run tests!
-      - run: npm run test
+      - run:
+          name: Running Test
+          command: npm run test
