@@ -143,10 +143,10 @@ describe('Client', () => {
             });
         });
     });
-});
-
-describe('SHUTDOWN', () => {
-    it('should shut down the PancakeDB server', done => {
-        ws.send('SHUTDOWN');
+    describe('SHUTDOWN', () => {
+        it('should shut down the PancakeDB server', done => {
+            ws.send('SHUTDOWN');
+            done();
+        });
     });
 });
