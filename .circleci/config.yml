@@ -23,6 +23,14 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-        
+      
+      # start pancakedb server
+      - run:
+        name: Running PancakeDB server
+        command: npm run start
+        background: true
+
+      - run: sleep 1
+
       # run tests!
       - run: npm run test

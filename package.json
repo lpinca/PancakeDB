@@ -4,7 +4,8 @@
   "description": "PancakeDB - nodejs database software",
   "main": "index.js",
   "scripts": {
-    "test": "echo ok"
+    "test": "echo ok",
+    "start": "node ."
   },
   "keywords": [
     "database"
