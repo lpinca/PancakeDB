@@ -108,7 +108,7 @@ var databaseManager = {
  * @param {WebsocketClient} ws The WebSocket client that sent the message.
  * @param {string} msg The message that the client sent.
  */
-module.exports = function messageHandler(ws, msg) {
+module.exports = function messageHandler(ws, msg, server) {
     let args = msg.split(' ');
     let cmd = args[0];
     args.shift();
@@ -314,5 +314,7 @@ module.exports = function messageHandler(ws, msg) {
         } else {
             ws.send('NOT_AUTHENTICATED');
         }
+    } else if (cmd == 'SHUTDOWN') {
+        server.emit('pancakedb_shutdown');
     }
 }
