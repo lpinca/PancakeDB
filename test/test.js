@@ -41,6 +41,7 @@ describe('Client', () => {
         ws = new WebSocket('ws://localhost:8080');
         ws.on('message', () => {
             done();
+            ws.removeAllListeners('message');
         });
     });
     describe('AUTH', () => {
