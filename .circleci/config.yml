@@ -26,9 +26,9 @@ jobs:
       
       # start pancakedb server
       - run:
-        name: Running PancakeDB server
-        command: npm run start
-        background: true
+          name: Running PancakeDB server
+          command: npm run start
+          background: true
 
       - run: sleep 1
 
