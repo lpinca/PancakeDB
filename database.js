@@ -19,6 +19,7 @@
 const log = require('./log');
 const chalk = require('chalk');
 const ini = require('ini');
+const mergeJSON = require("merge-json");
 const fs = require('fs');
 const config = ini.parse(fs.readFileSync('./PancakeDB.ini', 'utf-8'));
 const password = config.Configuration.Password;
@@ -97,6 +98,17 @@ var databaseManager = {
             database[table] = [];
             fs.writeFileSync(`./databases/${db}.json`, JSON.stringify(database));
             return true;
+        } else {
+            return false;
+        }
+    },
+    mergeDatabase: (db, dbToMerge) => {
+        if (databaseManager.databaseExists(db) && databaseManager.databaseExists(dbToMerge)) {
+            let raw = fs.readFileSync(`./databases/${db}.json`);
+            let rawMerger = fs.readFileSync(`./databases/${dbToMerge}.json`);
+            let merged = mergeJSON.merge(raw, rawMerger);
+            fs.writeFileSync(`./databases/${db}.json`, JSON.stringify(merged));
+            return true
         } else {
             return false;
         }
@@ -308,6 +320,36 @@ module.exports = function messageHandler(ws, msg, server) {
                         }
                     } else {
                         ws.send('NO_DATABASE');
+                    }
+                }
+            }
+        } else {
+            ws.send('NOT_AUTHENTICATED');
+        }
+    } else if (cmd == 'MERGE') { //As far as I got
+        if (ws.isAuthenticated) {
+            if (args.length < 2) {
+                ws.send('NOT_ENOUGH_ARGUMENTS');
+            } else {
+                if (args[0] == 'DATABASE') {
+                    if (ws.current.database != undefined && databaseManager.databaseExists(args[1])) {
+                        if (databaseManager.mergeDatabase(ws.current.database, args[1])) {
+                            ws.send('OK');
+                        } else {
+                            ws.send('FAILURE');
+                        }
+                    } else {
+                        if (args[1] == undefined) {
+                            ws.send('NOT_ENOUGH_ARGUMENTS');
+                        } else if (!databaseManager.databaseExists(args[1]) || ws.current.database == undefined) {
+                            ws.send('NO_DATABASE')
+                        } else {
+                            if (databaseManager.mergeDatabase(ws.current.database, args[1])) {
+                                ws.send('OK');
+                            } else {
+                                ws.send('FAILURE');
+                            }
+                        }
                     }
                 }
             }
