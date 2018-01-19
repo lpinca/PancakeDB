@@ -104,8 +104,8 @@ var databaseManager = {
     },
     mergeDatabase: (db, dbToMerge) => {
         if (databaseManager.databaseExists(db) && databaseManager.databaseExists(dbToMerge)) {
-            let raw = fs.readFileSync(`./databases/${db}.json`);
-            let rawMerger = fs.readFileSync(`./databases/${dbToMerge}.json`);
+            let raw = databaseManager.getDatabaseObject(db);
+            let rawMerger = databaseManager.getDatabaseObject(dbToMerge);
             let merged = mergeJSON.merge(raw, rawMerger);
             fs.writeFileSync(`./databases/${db}.json`, JSON.stringify(merged));
             return true
