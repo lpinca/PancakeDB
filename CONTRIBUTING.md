@@ -77,6 +77,8 @@ Unsure where to begin contributing to PancakeDB? You can start by looking throug
 * `beginner` issues - issues that should only require a few lines of code, and a maximum of an hour to test.
 * `help-wanted` issues - issues that are a bit more involved than `beginner` issues.
 
+When changing documentation, include `[ci skip]` or `[skip ci]` in your commit message so that you don't trigger a build.
+
 #### Pull Requests
 * Fill in the required template.
 * Do not include issue numbers in the PR title.
