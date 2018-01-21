@@ -29,16 +29,10 @@ const dir = chaiFiles.dir;
 
 var ws;
 
-
-try {
 describe('Client', () => {
     afterEach(() => {
-        try {
-            ws.removeAllListeners('message');
-        } catch (e) {
-            // don't care, it will only error on the last test.
-        }
-    })
+        ws.removeAllListeners('message');
+    });
     it('should connect', done => {
         ws = new WebSocket('ws://localhost:8080');
         ws.on('message', () => {
@@ -69,40 +63,7 @@ describe('Client', () => {
                 });
                 ws.send('CREATE DATABASE test_database');
             });
-        });
-        describe('TABLE', () => {
-            before(() => {
-                ws.on('message', m => {
-                    expect(m).to.equal('OK');
-                });
-                ws.send('SELECT DATABASE test_database');
-            });
-            it('should create a table by the name test_table in the database test_database', () => {
-                ws.on('message', m => {
-                    expect(m).to.equal('OK');
-                    expect(file('./databases/test_database.json')).to.equal('{"test_table":[]}');
-                });
-                ws.send('CREATE TABLE test_table');
-            });
-        });
-    });
-    describe('INSERT', () => {
-        before(() => {
-            ws.on('message', m => {
-                expect(m).to.equal('OK');
-            });
-            ws.send('SELECT TABLE test_table');
-        });
-        it('should insert a record into the table test_table in the database test_database', () => {
-            ws.on('message', m => {
-                expect(m).to.equal('OK');
-            });
-            ws.send('INSERT {"test_record":true}');
-        });
-    });
-    describe('CREATE_MERGE', () => {
-        describe('DATABASE', () => {
-            it('should create 1 database by the name test_database1 to merge with database', () => {
+            it('should create 1 database by the name test_database1', () => {
                 ws.on('message', m => {
                     expect(m).to.equal('OK');
                     expect(file('./databases/test_database1.json')).to.exist();
@@ -111,35 +72,62 @@ describe('Client', () => {
             });
         });
         describe('TABLE', () => {
-            before(() => {
+            it('should create a table by the name test_table in the database test_database', () => {
                 ws.on('message', m => {
-                    expect(m).to.equal('OK');
+                    let count = 0;
+                    if (count == 1) {
+                        expect(m).to.equal('OK');
+                        expect(file('./databases/test_database.json')).to.equal('{"test_table":[]}');
+                    } else {
+                        expect(m).to.equal('OK');
+                        count++;
+                    }
                 });
-                ws.send('SELECT DATABASE test_database1');
+                ws.send('SELECT DATABASE test_database');
+                ws.send('CREATE TABLE test_table');
             });
             it('should create a table by the name test_table1 in the database test_database1', () => {
                 ws.on('message', m => {
-                    expect(m).to.equal('OK');
-                    expect(file('./databases/test_database.json')).to.equal('{"test_table1":[]}');
+                    let count = 0;
+                    if (count == 1) {
+                        expect(m).to.equal('OK');
+                        expect(file('./databases/test_database1.json')).to.equal('{"test_table1":[]}');
+                    } else {
+                        expect(m).to.equal('OK');
+                        count++;
+                    }
                 });
+                ws.send('SELECT DATABASE test_database1');
                 ws.send('CREATE TABLE test_table1');
             });
         });
     });
-    describe('MERGE', () => {
+    describe('INSERT', () => {
         before(() => {
             ws.on('message', m => {
                 expect(m).to.equal('OK');
             });
             ws.send('SELECT DATABASE test_database');
         });
-        it('should merge two databases test_database and test_database1', () => {
+        it('should insert a record into the table test_table in the database test_database', () => {
             ws.on('message', m => {
                 expect(m).to.equal('OK');
-                expect(file('./databases/test_database.json')).to.have.any.keys('test_table1');
+                expect(file('./databases/test_database.json')).to.contain('{"test_record":true}');
+                
             });
-            ws.send('MERGE DATABASE test_database1');
-        }); 
+            ws.send('INSERT {"test_record":true}');
+        });
+    });
+    describe('MERGE', () => {
+        describe('DATABASE', () => {
+            it('should merge the two databases named test_database and test_database1', () => {
+                ws.on('message', m => {
+                    expect(m).to.equal('OK');
+                    expect(file('./databases/test_database.json')).to.have.any.keys('test_table1');
+                });
+                ws.send('MERGE DATABASE test_database1');
+            }); 
+        });
     });
     describe('LIST', () => {
         describe('DATABASES', () => {
@@ -178,13 +166,18 @@ describe('Client', () => {
             });
         });
         describe('DATABASE', () => { // now we delete the database
-            it('should delete 2 both database test_database and test_database1', () => {
+            it('should delete database test_database', () => {
                 ws.on('message', m => {
                     expect(m).to.equal('OK');
                     expect(file('./databases/test_database.json')).to.not.exist();
-                    expect(file('./databases/test_database1.json')).to.not.exist();
                 });
                 ws.send('DELETE DATABASE test_database');
+            });
+            it('should delete database test_database1', () => {
+                ws.on('message', m => {
+                    expect(m).to.equal('OK');
+                    expect(file('./databases/test_database1.json')).to.not.exist();
+                });
                 ws.send('DELETE DATABASE test_database1');
             });
         });
@@ -196,10 +189,3 @@ describe('Client', () => {
         });
     });
 });
-} catch (e) {
-    if (e.message.indexOf('Invalid WebSocket frame') > -1) {
-        // nothing we can do, if we reach this point we most likely have to restart the build if the test hangs
-    } else {
-        throw e;
-    }
-}
