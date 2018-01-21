@@ -1,3 +1,4 @@
 node_modules/
 databases/
 PancakeDB.ini
+test-results.xml
