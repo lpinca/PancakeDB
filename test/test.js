@@ -62,7 +62,7 @@ describe('Client', () => {
     });
     describe('CREATE', () => {
         describe('DATABASE', () => {
-            it('should create a database by the name test_database', () => {
+            it('should create 1 database by the name test_database', () => {
                 ws.on('message', m => {
                     expect(m).to.equal('OK');
                     expect(file('./databases/test_database.json')).to.exist();
@@ -99,6 +99,47 @@ describe('Client', () => {
             });
             ws.send('INSERT {"test_record":true}');
         });
+    });
+    describe('CREATE_MERGE', () => {
+        describe('DATABASE', () => {
+            it('should create 1 database by the name test_database1 to merge with database', () => {
+                ws.on('message', m => {
+                    expect(m).to.equal('OK');
+                    expect(file('./databases/test_database1.json')).to.exist();
+                });
+                ws.send('CREATE DATABASE test_database1');
+            });
+        });
+        describe('TABLE', () => {
+            before(() => {
+                ws.on('message', m => {
+                    expect(m).to.equal('OK');
+                });
+                ws.send('SELECT DATABASE test_database1');
+            });
+            it('should create a table by the name test_table1 in the database test_database1', () => {
+                ws.on('message', m => {
+                    expect(m).to.equal('OK');
+                    expect(file('./databases/test_database.json')).to.equal('{"test_table1":[]}');
+                });
+                ws.send('CREATE TABLE test_table1');
+            });
+        });
+    });
+    describe('MERGE', () => {
+        before(() => {
+            ws.on('message', m => {
+                expect(m).to.equal('OK');
+            });
+            ws.send('SELECT DATABASE test_database');
+        });
+        it('should merge two databases test_database and test_database1', () => {
+            ws.on('message', m => {
+                expect(m).to.equal('OK');
+                expect(file('./databases/test_database.json')).to.have.any.keys('test_table1');
+            });
+            ws.send('MERGE DATABASE test_database1');
+        }); 
     });
     describe('LIST', () => {
         describe('DATABASES', () => {
@@ -137,12 +178,14 @@ describe('Client', () => {
             });
         });
         describe('DATABASE', () => { // now we delete the database
-            it('should delete the the database test_database', () => {
+            it('should delete 2 both database test_database and test_database1', () => {
                 ws.on('message', m => {
                     expect(m).to.equal('OK');
                     expect(file('./databases/test_database.json')).to.not.exist();
+                    expect(file('./databases/test_database1.json')).to.not.exist();
                 });
                 ws.send('DELETE DATABASE test_database');
+                ws.send('DELETE DATABASE test_database1');
             });
         });
     });
