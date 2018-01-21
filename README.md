@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/PancakeDB/PancakeDB/master/PancakeDB_Banner.png" width="300" height="300">
+    <img src="https://raw.githubusercontent.com/PancakeDB/PancakeDB/master/PancakeDB_Banner.png" height="300">
 </p>
 <p align="center">
     <a href="https://circleci.com/gh/PancakeDB/PancakeDB/tree/master">
